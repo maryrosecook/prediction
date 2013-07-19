@@ -80,7 +80,7 @@ setInterval(function() {
   for (var i in players) {
     io.sockets.emit('update', players[i].toData());
   }
-}, 0);
+}, 17);
 
 
 // game tick
@@ -89,5 +89,5 @@ setInterval(function() {
   for (var i in players) {
     players[i].update(new Date().getTime() - last);
   }
-}, 0);
   last = new Date().getTime();
+}, 17);
