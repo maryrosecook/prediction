@@ -32,14 +32,14 @@ var ROTATION_FACTOR = 0.005;
 var THRUST_FACTOR = 0.0001;
 
 Player.prototype = {
-  update: function() {
+  update: function(delta) {
     if (this.state[37]) { // left
-      this.angle -= ROTATION_FACTOR;
+      this.angle -= ROTATION_FACTOR * delta;
     } else if (this.state[39]) { // right
-      this.angle += ROTATION_FACTOR;
+      this.angle += ROTATION_FACTOR * delta;
     } else if (this.state[38]) { // up
-      this.vector.x += Math.sin(this.angle) * THRUST_FACTOR;
-      this.vector.y += -Math.cos(this.angle) * THRUST_FACTOR;
+      this.vector.x -= Math.sin(this.angle) * THRUST_FACTOR * delta;
+      this.vector.y += Math.cos(this.angle) * THRUST_FACTOR * delta;
     }
 
     this.position.x += this.vector.x;
@@ -84,8 +84,10 @@ setInterval(function() {
 
 
 // game tick
+var last = new Date().getTime();
 setInterval(function() {
   for (var i in players) {
-    players[i].update();
+    players[i].update(new Date().getTime() - last);
   }
 }, 0);
+  last = new Date().getTime();
