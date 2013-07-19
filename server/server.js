@@ -29,7 +29,7 @@ var Player = function(id) {
 };
 
 var ROTATION_FACTOR = 0.005;
-var THRUST_FACTOR = 0.0001;
+var THRUST_FACTOR = 0.001;
 
 Player.prototype = {
   update: function(delta) {
