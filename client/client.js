@@ -14,8 +14,19 @@ var startSendingKeypresses = function(socket) {
 
 var StateListener = function(socket) {
   var data = {};
+  var ignore = false;
+
   socket.on('update', function(message) {
-    data[message.id] = message.data;
+    if (Math.random() < 0.01) {
+      ignore = true;
+      setTimeout(function() {
+        ignore = false;
+      }, 200);
+    }
+
+    if (ignore === false) {
+      data[message.id] = message.data;
+    }
   });
 
   socket.on('death', function(message) {
