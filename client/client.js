@@ -4,17 +4,13 @@ var extend = function(recipient, sender) {
   }
 };
 
-var startSendingKeypresses = function(socket) {
-  var sendKeyPress = function(key, down) {
-    socket.emit('keypress', { key:key, down:down });
-  };
-
+var onKeyChange = function(fn) {
 	window.addEventListener('keydown', function(e) {
-    sendKeyPress(e.keyCode, true);
+    fn(e.keyCode, true);
   });
 
-	window.addEventListener('keyup', function(e) {
-    sendKeyPress(e.keyCode, false);
+  window.addEventListener('keyup', function(e) {
+    fn(e.keyCode, false);
   });
 };
 
@@ -77,7 +73,9 @@ window.onload = function() {
 
     var stateListener = new StateListener(socket, players);
 
-    startSendingKeypresses(socket);
+    onKeyChange(function(key, down) {
+      socket.emit('keypress', { key:key, down:down });
+    });
 
     var ctx = setupCtx(data.game.w, data.game.h);
 
