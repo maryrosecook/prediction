@@ -52,7 +52,7 @@ io.sockets.on('connection', function (socket) {
   io.sockets.emit('update', player.toData());
 
   socket.on('keypress', function(data) {
-    player.change(data);
+    player.change(data.key, data.down);
   });
 
   socket.on('disconnect', function() {

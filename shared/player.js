@@ -25,8 +25,8 @@
       this.position.y += this.vector.y;
     },
 
-    change: function(data) {
-      this.keyState[data.key] = data.down;
+    change: function(keyCode, down) {
+      this.keyState[keyCode] = down;
     }
   };
 
