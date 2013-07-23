@@ -19,6 +19,10 @@ function handler (req, res) {
 }
 
 var players = {};
+var gameSettings = {
+  w: 500,
+  h: 500
+};
 
 Player.prototype.toData = function() {
   return {
@@ -31,12 +35,24 @@ Player.prototype.toData = function() {
 };
 
 io.sockets.on('connection', function (socket) {
-  socket.emit('ack', socket.id);
-  players[socket.id] = new Player(socket.id);
-  io.sockets.emit('update', players[socket.id].toData());
+  var player = new Player(socket.id, {
+    x: Math.random() * gameSettings.w,
+    y: Math.random() * gameSettings.h
+  });
+  players[socket.id] = player;
+
+  socket.emit('setup', {
+    player: {
+      id: player.id,
+      position: player.position
+    },
+    game: gameSettings
+  });
+
+  io.sockets.emit('update', player.toData());
 
   socket.on('keypress', function(data) {
-    players[socket.id].change(data);
+    player.change(data);
   });
 
   socket.on('disconnect', function() {

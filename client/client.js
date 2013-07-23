@@ -62,10 +62,16 @@ var drawPlayer = function(ctx, player) {
   ctx.restore();
 };
 
+var setupCtx = function(w, h) {
+  var canvas = document.getElementById("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  return canvas.getContext('2d');
+};
+
 window.onload = function() {
   var socket = io.connect('http://localhost:5000');
-  socket.on('ack', function(id) {
-    var stateListener = new StateListener(socket);
+  socket.on('setup', function(data) {
     var players = {};
     players[data.player.id] = new Player(data.player.id, data.player.position);
 
@@ -73,7 +79,7 @@ window.onload = function() {
 
     startSendingKeypresses(socket);
 
-    var ctx = document.getElementById("canvas").getContext('2d');
+    var ctx = setupCtx(data.game.w, data.game.h);
 
     var render = function() {
       var data = stateListener.getData();

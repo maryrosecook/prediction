@@ -1,8 +1,8 @@
 ;(function(exports) {
-  var Player = function(id) {
+  var Player = function(id, position) {
     this.id = id;
     this.angle = 0;
-    this.position = { x: 50, y:50 };
+    this.position = position;
     this.vector = { x:0, y:0 };
     this.keyState = [];
   };
