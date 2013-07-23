@@ -65,6 +65,13 @@ var setupCtx = function(w, h) {
   return canvas.getContext('2d');
 };
 
+var requestAnimationFrameLoop = function(fn) {
+  requestAnimationFrame(function recur() {
+    fn();
+    requestAnimationFrame(recur);
+  });
+};
+
 window.onload = function() {
   var socket = io.connect('http://localhost:5000');
   socket.on('setup', function(data) {
@@ -79,7 +86,7 @@ window.onload = function() {
 
     var ctx = setupCtx(data.game.w, data.game.h);
 
-    var render = function() {
+    requestAnimationFrameLoop(function() {
       var data = stateListener.getData();
       ctx.fillStyle = "#000";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -87,9 +94,7 @@ window.onload = function() {
       for (var i in data) {
         drawPlayer(ctx, data[i]);
       };
+    });
 
-      requestAnimationFrame(render);
-    };
-    requestAnimationFrame(render);
   });
 };
