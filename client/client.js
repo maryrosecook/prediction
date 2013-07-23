@@ -76,7 +76,8 @@ window.onload = function() {
   var socket = io.connect('http://localhost:5000');
   socket.on('setup', function(data) {
     var players = {};
-    players[data.player.id] = new Player(data.player.id, data.player.position);
+    var player = new Player(data.player.id, data.player.position);
+    players[data.player.id] = player;
 
     var stateListener = new StateListener(socket, players);
 
