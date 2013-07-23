@@ -1,3 +1,9 @@
+var extend = function(recipient, sender) {
+  for (var i in sender) {
+    recipient[i] = sender[i];
+  }
+};
+
 var startSendingKeypresses = function(socket) {
   var sendKeyPress = function(key, down) {
     socket.emit('keypress', { key:key, down:down });
@@ -12,8 +18,7 @@ var startSendingKeypresses = function(socket) {
   });
 };
 
-var StateListener = function(socket) {
-  var data = {};
+var StateListener = function(socket, data) {
   var ignore = false;
 
   socket.on('update', function(message) {
@@ -25,7 +30,8 @@ var StateListener = function(socket) {
     }
 
     if (ignore === false) {
-      data[message.id] = message.data;
+      data[message.id] = data[message.id] || {};
+      extend(data[message.id], message.data);
     }
   });
 
@@ -60,6 +66,11 @@ window.onload = function() {
   var socket = io.connect('http://localhost:5000');
   socket.on('ack', function(id) {
     var stateListener = new StateListener(socket);
+    var players = {};
+    players[data.player.id] = new Player(data.player.id, data.player.position);
+
+    var stateListener = new StateListener(socket, players);
+
     startSendingKeypresses(socket);
 
     var ctx = document.getElementById("canvas").getContext('2d');
