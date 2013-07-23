@@ -81,6 +81,8 @@ window.onload = function() {
 
     var stateListener = new StateListener(socket, players);
 
+    onKeyChange(player.change.bind(player));
+
     onKeyChange(function(key, down) {
       socket.emit('keypress', { key:key, down:down });
     });
@@ -97,5 +99,11 @@ window.onload = function() {
       };
     });
 
+    var delta = new Date().getTime();
+    requestAnimationFrameLoop(function() {
+      var now = new Date().getTime();
+      player.update(now - delta);
+      delta = now;
+    });
   });
 };
