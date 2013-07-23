@@ -20,8 +20,8 @@ function handler (req, res) {
 
 var players = {};
 var gameSettings = {
-  w: 500,
-  h: 500
+  w: 300,
+  h: 300
 };
 
 Player.prototype.toData = function() {
