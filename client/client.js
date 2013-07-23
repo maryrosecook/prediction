@@ -58,21 +58,23 @@ var drawPlayer = function(ctx, player) {
 
 window.onload = function() {
   var socket = io.connect('http://localhost:5000');
-  var stateListener = new StateListener(socket);
-  startSendingKeypresses(socket);
+  socket.on('ack', function(id) {
+    var stateListener = new StateListener(socket);
+    startSendingKeypresses(socket);
 
-  var ctx = document.getElementById("canvas").getContext('2d');
+    var ctx = document.getElementById("canvas").getContext('2d');
 
-  var render = function() {
-    var data = stateListener.getData();
-    ctx.fillStyle = "#000";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    var render = function() {
+      var data = stateListener.getData();
+      ctx.fillStyle = "#000";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    for (var i in data) {
-      drawPlayer(ctx, data[i]);
+      for (var i in data) {
+        drawPlayer(ctx, data[i]);
+      };
+
+      requestAnimationFrame(render);
     };
-
     requestAnimationFrame(render);
-  };
-  requestAnimationFrame(render);
+  });
 };

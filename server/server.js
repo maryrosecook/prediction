@@ -62,6 +62,7 @@ Player.prototype = {
 };
 
 io.sockets.on('connection', function (socket) {
+  socket.emit('ack', socket.id);
   players[socket.id] = new Player(socket.id);
   io.sockets.emit('update', players[socket.id].toData());
 
