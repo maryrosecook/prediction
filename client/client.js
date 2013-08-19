@@ -62,7 +62,7 @@ var drawPlayer = function(ctx, player) {
   ctx.translate(player.position.x + ship.w / 2,
                 player.position.y + ship.h / 2);
   ctx.rotate(player.angle); // radians
-  ctx.fillStyle = "#fff";
+  ctx.fillStyle = player.color || "#fff";
   ctx.fillRect(-(ship.w / 2), -(ship.h / 2), ship.w, ship.h);
   ctx.fillStyle = "#f00";
   ctx.fillRect(-(ship.w / 2), -(ship.h / 2), ship.w, ship.h / 10);
@@ -97,6 +97,7 @@ window.onload = function() {
     var activeKeyDispatcher = new ActiveKeyDispatcher();
 
     var player = new Player(data.player.id, data.player.position);
+    player.color = "yellow";
     stateListener.setDatum(data.player.id, player);
     activeKeyDispatcher.register(player.change.bind(player));
 
