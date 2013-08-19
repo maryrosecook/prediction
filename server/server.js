@@ -72,8 +72,9 @@ setInterval(function() {
 // game tick
 var last = new Date().getTime();
 setInterval(function() {
+  var now = new Date().getTime();
   for (var i in players) {
-    players[i].update(new Date().getTime() - last);
+    players[i].update(now - last);
   }
-  last = new Date().getTime();
+  last = now;
 }, 17);
