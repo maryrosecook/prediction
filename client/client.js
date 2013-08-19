@@ -1,4 +1,4 @@
-var extend = function(recipient, sender) {
+var extend = function(sender, recipient) {
   for (var i in sender) {
     recipient[i] = sender[i];
   }
@@ -32,20 +32,8 @@ var ActiveKeyDispatcher = function() {
 };
 
 var StateListener = function(socket, data) {
-  var ignore = false;
 
   socket.on('update', function(message) {
-    if (Math.random() < 0.01) {
-      ignore = true;
-      setTimeout(function() {
-        ignore = false;
-      }, 200);
-    }
-
-    if (ignore === false) {
-      data[message.id] = data[message.id] || {};
-      extend(data[message.id], message.data);
-    }
   });
 
   socket.on('death', function(message) {
