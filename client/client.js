@@ -70,6 +70,12 @@ var drawPlayer = function(ctx, player) {
   ctx.restore();
 };
 
+var drawPlayers = function(ctx, players) {
+  for (var i in players) {
+    drawPlayer(ctx, players[i]);
+  }
+};
+
 var setupCtx = function(w, h) {
   var canvas = document.getElementById("canvas");
   canvas.width = w;
@@ -106,10 +112,7 @@ window.onload = function() {
       var data = stateListener.getData();
       ctx.fillStyle = "#000";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      for (var i in data) {
-        drawPlayer(ctx, data[i]);
-      };
+      drawPlayers(ctx, data);
     });
 
     var delta = new Date().getTime();
