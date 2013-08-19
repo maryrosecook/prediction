@@ -51,8 +51,8 @@ io.sockets.on('connection', function (socket) {
 
   io.sockets.emit('update', player.toData());
 
-  socket.on('keypress', function(data) {
-    player.change(data.key, data.down);
+  socket.on('keyactive', function(data) {
+    player.change(data.key);
   });
 
   socket.on('disconnect', function() {

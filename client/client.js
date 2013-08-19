@@ -4,14 +4,31 @@ var extend = function(recipient, sender) {
   }
 };
 
-var onKeyChange = function(fn) {
+var ActiveKeyDispatcher = function() {
+  var keyStates = {};
+  var fns = [];
 	window.addEventListener('keydown', function(e) {
-    fn(e.keyCode, true);
+    keyStates[e.keyCode] = true;
   });
 
   window.addEventListener('keyup', function(e) {
-    fn(e.keyCode, false);
+    keyStates[e.keyCode] = false;
   });
+
+  setInterval(function() {
+    for (var i in keyStates) {
+      if (keyStates[i] === true) {
+        var keyCode = parseInt(i, 10);
+        fns.forEach(function(x) {
+          x(keyCode);
+        });
+      }
+    }
+  }, 10);
+
+  this.register = function(fn) {
+    fns.push(fn);
+  };
 };
 
 var StateListener = function(socket, data) {
@@ -80,11 +97,14 @@ window.onload = function() {
     players[data.player.id] = player;
 
     var stateListener = new StateListener(socket, players);
+    var activeKeyDispatcher = new ActiveKeyDispatcher();
 
-    onKeyChange(player.change.bind(player));
+    activeKeyDispatcher.register(player.change.bind(player));
 
-    onKeyChange(function(key, down) {
-      socket.emit('keypress', { key:key, down:down });
+    activeKeyDispatcher.register(function(key) {
+      latentBy(1000, function() {
+        socket.emit('keyactive', { key:key });
+      });
     });
 
     var ctx = setupCtx(data.game.w, data.game.h);
