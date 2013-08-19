@@ -31,9 +31,12 @@ var ActiveKeyDispatcher = function() {
   };
 };
 
-var StateListener = function(socket, data) {
+var StateListener = function(socket) {
+  var data = {};
 
   socket.on('update', function(message) {
+    data[message.id] = data[message.id] || {};
+    extend(message.data, data[message.id]);
   });
 
   socket.on('death', function(message) {
@@ -42,6 +45,10 @@ var StateListener = function(socket, data) {
 
   this.getData = function() {
     return data;
+  };
+
+  this.setDatum = function(id, value) {
+    data[id] = value;
   };
 };
 
@@ -80,13 +87,11 @@ var requestAnimationFrameLoop = function(fn) {
 window.onload = function() {
   var socket = io.connect('http://localhost:5000');
   socket.on('setup', function(data) {
-    var players = {};
-    var player = new Player(data.player.id, data.player.position);
-    players[data.player.id] = player;
-
-    var stateListener = new StateListener(socket, players);
+    var stateListener = new StateListener(socket);
     var activeKeyDispatcher = new ActiveKeyDispatcher();
 
+    var player = new Player(data.player.id, data.player.position);
+    stateListener.setDatum(data.player.id, player);
     activeKeyDispatcher.register(player.change.bind(player));
 
     activeKeyDispatcher.register(function(key) {
