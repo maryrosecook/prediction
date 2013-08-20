@@ -77,6 +77,22 @@ Player.prototype.draw = function(ctx) {
   ctx.restore();
 };
 
+Bullet.prototype.draw = function(ctx) {
+  var radius = 1.5;
+  ctx.fillStyle = "#fff";
+  ctx.strokeStyle = "#fff";
+  ctx.beginPath();
+  ctx.arc(this.position.x, this.position.y, radius, 0, Math.PI * 2, true);
+  ctx.closePath();
+  ctx.stroke();
+  ctx.fill();
+};
+
+Player.prototype.fire = function() {
+  return new Bullet({
+    position: { x: this.position.x, y: this.position.y },
+    angle: this.angle
+  });
 };
 
 var setupCtx = function(w, h) {
@@ -103,6 +119,12 @@ window.onload = function() {
     player.color = "yellow";
     stateListener.setDatum(data.player.id, player);
     keyDispatcher.register('active', player.change.bind(player));
+    keyDispatcher.register('down', function(keyCode) {
+      if (keyCode === 32) {
+        var bullet = player.fire();
+        stateListener.setDatum(bullet.id, bullet);
+      }
+    });
 
     keyDispatcher.register('active', function(key) {
       latentBy(1000, function() {
