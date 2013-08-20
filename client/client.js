@@ -132,7 +132,7 @@ window.onload = function() {
       });
     });
 
-    var ctx = setupCtx(data.game.w, data.game.h);
+    var ctx = setupCtx(data.game.size.x, data.game.size.y);
 
     requestAnimationFrameLoop(function() {
       var data = stateListener.getData();

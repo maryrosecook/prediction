@@ -20,8 +20,7 @@ function handler (req, res) {
 
 var players = {};
 var gameSettings = {
-  w: 300,
-  h: 300
+  size: { x:300, y: 300 }
 };
 
 Player.prototype.toData = function() {
@@ -39,8 +38,8 @@ io.sockets.on('connection', function (socket) {
   var player = new Player({
     id: socket.id,
     position: {
-      x: Math.random() * gameSettings.w,
-      y: Math.random() * gameSettings.h
+      x: Math.random() * gameSettings.size.x,
+      y: Math.random() * gameSettings.size.y
     }
   });
   players[socket.id] = player;
