@@ -123,6 +123,9 @@ window.onload = function() {
       if (keyCode === 32) {
         var bullet = player.fire();
         stateListener.setDatum(bullet.id, bullet);
+        latentBy(0, function() {
+          socket.emit('newbullet', bullet);
+        });
       }
     });
 

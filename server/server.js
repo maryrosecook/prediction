@@ -2,6 +2,7 @@ var app = require('http').createServer(handler),
     io = require('socket.io').listen(app, { log: false }),
     fs = require('fs'),
     Player = require('../shared/player').Player;
+    Bullet = require('../shared/bullet').Bullet;
 
 app.listen(5000);
 
@@ -34,6 +35,17 @@ Player.prototype.toData = function() {
   };
 };
 
+Bullet.prototype.toData = function() {
+  return {
+    ctor: 'Bullet',
+    id: this.id,
+    data: {
+      vector: this.vector,
+      position: this.position
+    }
+  };
+};
+
 io.sockets.on('connection', function (socket) {
   var player = new Player({
     id: socket.id,
@@ -56,6 +68,11 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('keyactive', function(data) {
     player.change(data.key);
+  });
+
+  socket.on('newbullet', function(data) {
+    var bullet = new Bullet(data);
+    entities[bullet.id] = bullet;
   });
 
   socket.on('disconnect', function() {
