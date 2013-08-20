@@ -127,7 +127,7 @@ window.onload = function() {
     });
 
     keyDispatcher.register('active', function(key) {
-      latentBy(1000, function() {
+      latentBy(0, function() {
         socket.emit('keyactive', { key:key });
       });
     });
