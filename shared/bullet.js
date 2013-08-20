@@ -29,7 +29,7 @@
   var Bullet = function(settings) {
     this.id = settings.id || guid();
     this.position = settings.position;
-    this.vector = angleToVector(settings.angle);
+    this.vector = settings.vector || angleToVector(settings.angle);
   };
 
   var THRUST_FACTOR = 0.2;
