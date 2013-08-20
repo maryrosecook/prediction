@@ -13,6 +13,7 @@
   };
 
   var angleToVector = function(r) {
+    if (r === undefined) throw "Angle for vector is undefined";
     var x = -Math.sin(r);
     var y = Math.cos(r);
     return unitVector({ x: x, y: y });
