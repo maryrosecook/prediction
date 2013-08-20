@@ -57,17 +57,17 @@ var StateListener = function(socket) {
   };
 };
 
-var drawPlayer = function(ctx, player) {
+Player.prototype.draw = function(ctx) {
   var ship = {
     w: 20,
     h: 20,
   };
 
   ctx.save();
-  ctx.translate(player.position.x + ship.w / 2,
-                player.position.y + ship.h / 2);
-  ctx.rotate(player.angle); // radians
-  ctx.fillStyle = player.color || "#fff";
+  ctx.translate(this.position.x + ship.w / 2,
+                this.position.y + ship.h / 2);
+  ctx.rotate(this.angle); // radians
+  ctx.fillStyle = this.color || "#fff";
   ctx.fillRect(-(ship.w / 2), -(ship.h / 2), ship.w, ship.h);
   ctx.fillStyle = "#f00";
   ctx.fillRect(-(ship.w / 2), -(ship.h / 2), ship.w, ship.h / 10);
@@ -75,9 +75,9 @@ var drawPlayer = function(ctx, player) {
   ctx.restore();
 };
 
-var drawPlayers = function(ctx, players) {
-  for (var i in players) {
-    drawPlayer(ctx, players[i]);
+var draw = function(ctx, entities) {
+  for (var i in entities) {
+    entities[i].draw(ctx);
   }
 };
 
@@ -118,7 +118,7 @@ window.onload = function() {
       var data = stateListener.getData();
       ctx.fillStyle = "#000";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      drawPlayers(ctx, data);
+      draw(ctx, data);
     });
 
     var delta = new Date().getTime();
