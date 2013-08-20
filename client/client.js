@@ -4,30 +4,37 @@ var extend = function(sender, recipient) {
   }
 };
 
-var ActiveKeyDispatcher = function() {
+var KeyDispatcher = function() {
   var keyStates = {};
-  var fns = [];
+  var fns = { active: [], up: [], down: [] };
+
+  var dispatch = function(dispatchFns, keyCodeStr) {
+    var keyCode = parseInt(keyCodeStr, 10);
+    dispatchFns.forEach(function(f) {
+      f(keyCode);
+    });
+  };
+
 	window.addEventListener('keydown', function(e) {
     keyStates[e.keyCode] = true;
+    dispatch(fns.down, e.keyCode);
   });
 
   window.addEventListener('keyup', function(e) {
     keyStates[e.keyCode] = false;
+    dispatch(fns.up, e.keyCode);
   });
 
   setInterval(function() {
     for (var i in keyStates) {
       if (keyStates[i] === true) {
-        var keyCode = parseInt(i, 10);
-        fns.forEach(function(x) {
-          x(keyCode);
-        });
+        dispatch(fns.active, i);
       }
     }
   }, 10);
 
-  this.register = function(fn) {
-    fns.push(fn);
+  this.register = function(eventType, fn) {
+    fns[eventType].push(fn);
   };
 };
 
@@ -99,14 +106,14 @@ window.onload = function() {
   var socket = io.connect('http://localhost:5000');
   socket.on('setup', function(data) {
     var stateListener = new StateListener(socket);
-    var activeKeyDispatcher = new ActiveKeyDispatcher();
+    var keyDispatcher = new KeyDispatcher();
 
     var player = new Player(data.player);
     player.color = "yellow";
     stateListener.setDatum(data.player.id, player);
-    activeKeyDispatcher.register(player.change.bind(player));
+    keyDispatcher.register('active', player.change.bind(player));
 
-    activeKeyDispatcher.register(function(key) {
+    keyDispatcher.register('active', function(key) {
       latentBy(1000, function() {
         socket.emit('keyactive', { key:key });
       });
