@@ -3,6 +3,7 @@
     this.id = settings.id;
     this.angle = settings.angle || 0;
     this.position = settings.position;
+    this.size = { x:20, y:20 };
     this.vector = { x:0, y:0 };
   };
 

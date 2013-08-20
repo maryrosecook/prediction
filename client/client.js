@@ -65,19 +65,14 @@ var StateListener = function(socket) {
 };
 
 Player.prototype.draw = function(ctx) {
-  var ship = {
-    w: 20,
-    h: 20,
-  };
-
   ctx.save();
-  ctx.translate(this.position.x + ship.w / 2,
-                this.position.y + ship.h / 2);
+  ctx.translate(this.position.x, this.position.y);
   ctx.rotate(this.angle); // radians
   ctx.fillStyle = this.color || "#fff";
-  ctx.fillRect(-(ship.w / 2), -(ship.h / 2), ship.w, ship.h);
+  ctx.fillRect(-(this.size.x / 2), -(this.size.y / 2), this.size.x, this.size.y);
   ctx.fillStyle = "#f00";
-  ctx.fillRect(-(ship.w / 2), -(ship.h / 2), ship.w, ship.h / 10);
+  ctx.fillRect(-(this.size.x / 2), -(this.size.y / 2),
+               this.size.x, this.size.y / 10);
 
   ctx.restore();
 };
