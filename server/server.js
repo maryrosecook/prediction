@@ -18,7 +18,7 @@ function handler (req, res) {
   });
 }
 
-var players = {};
+var entities = {};
 var gameSettings = {
   size: { x:300, y: 300 }
 };
@@ -42,7 +42,7 @@ io.sockets.on('connection', function (socket) {
       y: Math.random() * gameSettings.size.y
     }
   });
-  players[socket.id] = player;
+  entities[socket.id] = player;
 
   socket.emit('setup', {
     player: {
@@ -59,15 +59,15 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('disconnect', function() {
-    delete players[socket.id];
+    delete entities[socket.id];
     io.sockets.emit('death', { id: socket.id });
   });
 });
 
 // send updates to clients
 setInterval(function() {
-  for (var i in players) {
-    io.sockets.emit('update', players[i].toData());
+  for (var i in entities) {
+    io.sockets.emit('update', entities[i].toData());
   }
 }, 17);
 
@@ -76,8 +76,8 @@ setInterval(function() {
 var last = new Date().getTime();
 setInterval(function() {
   var now = new Date().getTime();
-  for (var i in players) {
-    players[i].update(now - last);
+  for (var i in entities) {
+    entities[i].update(now - last);
   }
   last = now;
 }, 17);
