@@ -31,11 +31,16 @@ var ActiveKeyDispatcher = function() {
   };
 };
 
+var constructEntity = function(message) {
+  var Ctor = eval(message.ctor);
+  return new Ctor(message.data);
+};
+
 var StateListener = function(socket) {
   var data = {};
 
   socket.on('update', function(message) {
-    data[message.id] = data[message.id] || {};
+    data[message.id] = data[message.id] || constructEntity(message);
     extend(message.data, data[message.id]);
   });
 
@@ -96,7 +101,7 @@ window.onload = function() {
     var stateListener = new StateListener(socket);
     var activeKeyDispatcher = new ActiveKeyDispatcher();
 
-    var player = new Player(data.player.id, data.player.position);
+    var player = new Player(data.player);
     player.color = "yellow";
     stateListener.setDatum(data.player.id, player);
     activeKeyDispatcher.register(player.change.bind(player));

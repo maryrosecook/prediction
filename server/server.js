@@ -26,6 +26,7 @@ var gameSettings = {
 
 Player.prototype.toData = function() {
   return {
+    ctor: 'Player',
     id: this.id,
     data: {
       angle: this.angle,
@@ -35,9 +36,12 @@ Player.prototype.toData = function() {
 };
 
 io.sockets.on('connection', function (socket) {
-  var player = new Player(socket.id, {
-    x: Math.random() * gameSettings.w,
-    y: Math.random() * gameSettings.h
+  var player = new Player({
+    id: socket.id,
+    position: {
+      x: Math.random() * gameSettings.w,
+      y: Math.random() * gameSettings.h
+    }
   });
   players[socket.id] = player;
 
