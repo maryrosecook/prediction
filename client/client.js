@@ -124,7 +124,10 @@ window.onload = function() {
     var delta = new Date().getTime();
     requestAnimationFrameLoop(function() {
       var now = new Date().getTime();
-      player.update(now - delta);
+      var data = stateListener.getData();
+      for (var i in data) {
+        data[i].update(now - delta);
+      }
       delta = now;
     });
   });
