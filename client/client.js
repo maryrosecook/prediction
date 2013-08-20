@@ -77,10 +77,6 @@ Player.prototype.draw = function(ctx) {
   ctx.restore();
 };
 
-var draw = function(ctx, entities) {
-  for (var i in entities) {
-    entities[i].draw(ctx);
-  }
 };
 
 var setupCtx = function(w, h) {
@@ -120,7 +116,9 @@ window.onload = function() {
       var data = stateListener.getData();
       ctx.fillStyle = "#000";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      draw(ctx, data);
+      for (var i in data) {
+        data[i].draw(ctx);
+      }
     });
 
     var delta = new Date().getTime();
