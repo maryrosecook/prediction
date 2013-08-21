@@ -15,7 +15,7 @@ var KeyDispatcher = function() {
     });
   };
 
-	window.addEventListener('keydown', function(e) {
+  window.addEventListener('keydown', function(e) {
     keyStates[e.keyCode] = true;
     dispatch(fns.down, e.keyCode);
   });
