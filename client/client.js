@@ -82,12 +82,15 @@ Player.prototype.draw = function(ctx) {
 };
 
 Bullet.prototype.draw = function(ctx) {
-  drawCircle(ctx, 2, this.position, "#fff");
+  drawCircle(ctx, 1.5, this.position, "#fff");
 };
 
 Player.prototype.fire = function() {
   return new Bullet({
-    position: { x: this.position.x, y: this.position.y },
+    position: {
+      x: this.position.x - Math.sin(this.angle) * this.size.x / 2,
+      y: this.position.y + Math.cos(this.angle) * this.size.y / 2
+    },
     angle: this.angle
   });
 };
