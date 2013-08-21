@@ -74,6 +74,11 @@ var StateListener = function(socket) {
 
 Player.prototype.draw = function(ctx) {
   drawCircle(ctx, 10, this.position, this.color || "#fff");
+  ctx.save();
+  ctx.translate(this.position.x, this.position.y);
+  ctx.rotate(this.angle); // radians
+  drawCircle(ctx, 2, { x: 0, y: this.size.y / 3 }, "#f00")
+  ctx.restore();
 };
 
 Bullet.prototype.draw = function(ctx) {
