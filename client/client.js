@@ -4,6 +4,14 @@ var extend = function(sender, recipient) {
   }
 };
 
+var drawCircle = function(ctx, radius, position, color) {
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.arc(position.x, position.y, radius, 0, Math.PI * 2, true);
+  ctx.closePath();
+  ctx.fill();
+}
+
 var KeyDispatcher = function() {
   var keyStates = {};
   var fns = { active: [], up: [], down: [] };
@@ -65,27 +73,11 @@ var StateListener = function(socket) {
 };
 
 Player.prototype.draw = function(ctx) {
-  ctx.save();
-  ctx.translate(this.position.x, this.position.y);
-  ctx.rotate(this.angle); // radians
-  ctx.fillStyle = this.color || "#fff";
-  ctx.fillRect(-(this.size.x / 2), -(this.size.y / 2), this.size.x, this.size.y);
-  ctx.fillStyle = "#f00";
-  ctx.fillRect(-(this.size.x / 2), -(this.size.y / 2),
-               this.size.x, this.size.y / 10);
-
-  ctx.restore();
+  drawCircle(ctx, 10, this.position, this.color || "#fff");
 };
 
 Bullet.prototype.draw = function(ctx) {
-  var radius = 1.5;
-  ctx.fillStyle = "#fff";
-  ctx.strokeStyle = "#fff";
-  ctx.beginPath();
-  ctx.arc(this.position.x, this.position.y, radius, 0, Math.PI * 2, true);
-  ctx.closePath();
-  ctx.stroke();
-  ctx.fill();
+  drawCircle(ctx, 2, this.position, "#fff");
 };
 
 Player.prototype.fire = function() {
