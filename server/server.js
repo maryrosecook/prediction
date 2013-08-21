@@ -1,8 +1,9 @@
-var app = require('http').createServer(handler),
-    io = require('socket.io').listen(app, { log: false }),
-    fs = require('fs'),
-    Player = require('../shared/player').Player;
-    Bullet = require('../shared/bullet').Bullet;
+var app = require('http').createServer(handler);
+var io = require('socket.io').listen(app, { log: false });
+var fs = require('fs');
+var Player = require('../shared/player').Player;
+var Bullet = require('../shared/bullet').Bullet;
+var collision = require('../shared/collision')
 
 app.listen(5000);
 
@@ -39,6 +40,7 @@ Bullet.prototype.toData = function() {
   return {
     ctor: 'Bullet',
     id: this.id,
+    shooterId: this.shooterId,
     data: {
       vector: this.vector,
       position: this.position
@@ -77,7 +79,7 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('disconnect', function() {
     delete entities[socket.id];
-    io.sockets.emit('death', { id: socket.id });
+    io.sockets.emit('destroy', { id: socket.id });
   });
 });
 
@@ -88,6 +90,13 @@ setInterval(function() {
   }
 }, 17);
 
+var values = function(o) {
+  var a = [];
+  for (var i in o) {
+    a.push(o[i]);
+  }
+  return a;
+}
 
 // game tick
 var last = new Date().getTime();
@@ -96,5 +105,13 @@ setInterval(function() {
   for (var i in entities) {
     entities[i].update(now - last);
   }
+
+  collision.forEveryCollidingPair(values(entities), function(a, b) {
+    io.sockets.emit('destroy', { id: a.id });
+    io.sockets.emit('destroy', { id: b.id });
+    delete entities[a.id];
+    delete entities[b.id];
+  });
+
   last = now;
 }, 17);

@@ -59,16 +59,24 @@ var StateListener = function(socket) {
     extend(message.data, data[message.id]);
   });
 
-  socket.on('death', function(message) {
+  socket.on('destroy', function(message) {
     delete data[message.id];
   });
 
   this.getData = function() {
-    return data;
+    var outData = [];
+    for (var i in data) {
+      outData.push(data[i]);
+    }
+    return outData;
   };
 
   this.setDatum = function(id, value) {
     data[id] = value;
+  };
+
+  this.unsetDatum = function(id) {
+    delete data[id];
   };
 };
 
@@ -82,7 +90,7 @@ Player.prototype.draw = function(ctx) {
 };
 
 Bullet.prototype.draw = function(ctx) {
-  drawCircle(ctx, 1.5, this.position, "#fff");
+  drawCircle(ctx, this.size.x / 2, this.position, "#fff");
 };
 
 Player.prototype.fire = function() {
@@ -91,7 +99,8 @@ Player.prototype.fire = function() {
       x: this.position.x - Math.sin(this.angle) * this.size.x / 2,
       y: this.position.y + Math.cos(this.angle) * this.size.y / 2
     },
-    angle: this.angle
+    angle: this.angle,
+    shooterId: this.id
   });
 };
 
@@ -138,21 +147,26 @@ window.onload = function() {
     var ctx = setupCtx(data.game.size.x, data.game.size.y);
 
     requestAnimationFrameLoop(function() {
-      var data = stateListener.getData();
       ctx.fillStyle = "#000";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      for (var i in data) {
-        data[i].draw(ctx);
-      }
+      stateListener.getData().forEach(function(entity) {
+        entity.draw(ctx);
+      });
     });
 
     var delta = new Date().getTime();
     requestAnimationFrameLoop(function() {
       var now = new Date().getTime();
-      var data = stateListener.getData();
-      for (var i in data) {
-        data[i].update(now - delta);
-      }
+      var entities = stateListener.getData();
+      entities.forEach(function(entity) {
+        entity.update(now - delta);
+      });
+
+      forEveryCollidingPair(entities, function(a, b) {
+        stateListener.unsetDatum(a.id);
+        stateListener.unsetDatum(b.id);
+      });
+
       delta = now;
     });
   });

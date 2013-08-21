@@ -28,8 +28,10 @@
 
   var Bullet = function(settings) {
     this.id = settings.id || guid();
+    this.shooterId = settings.shooterId;
     this.position = settings.position;
     this.vector = settings.vector || angleToVector(settings.angle);
+    this.size = { x: 3, y: 3 };
   };
 
   var THRUST_FACTOR = 0.2;
