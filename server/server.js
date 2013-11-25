@@ -106,7 +106,7 @@ setInterval(function() {
     entities[i].update(now - last);
   }
 
-  collision.forEveryCollidingPair(values(entities), function(a, b) {
+  collision.forEveryCollidingPair(entities, function(a, b) {
     io.sockets.emit('destroy', { id: a.id });
     io.sockets.emit('destroy', { id: b.id });
     delete entities[a.id];

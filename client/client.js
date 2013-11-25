@@ -52,32 +52,17 @@ var constructEntity = function(message) {
 };
 
 var StateListener = function(socket) {
-  var data = {};
+  this.data = {};
+  var self = this;
 
   socket.on('update', function(message) {
-    data[message.id] = data[message.id] || constructEntity(message);
-    extend(message.data, data[message.id]);
+    self.data[message.id] = self.data[message.id] || constructEntity(message);
+    extend(message.data, self.data[message.id]);
   });
 
   socket.on('destroy', function(message) {
-    delete data[message.id];
+    delete self.data[message.id];
   });
-
-  this.getData = function() {
-    var outData = [];
-    for (var i in data) {
-      outData.push(data[i]);
-    }
-    return outData;
-  };
-
-  this.setDatum = function(id, value) {
-    data[id] = value;
-  };
-
-  this.unsetDatum = function(id) {
-    delete data[id];
-  };
 };
 
 Player.prototype.draw = function(ctx) {
@@ -126,12 +111,12 @@ window.onload = function() {
 
     var player = new Player(data.player);
     player.color = "yellow";
-    stateListener.setDatum(data.player.id, player);
+    stateListener.data[data.player.id] = player;
     keyDispatcher.register('active', player.change.bind(player));
     keyDispatcher.register('down', function(keyCode) {
       if (keyCode === 32) {
         var bullet = player.fire();
-        stateListener.setDatum(bullet.id, bullet);
+        stateListener.data[bullet.id] = bullet;
         latentBy(0, function() {
           socket.emit('newbullet', bullet);
         });
@@ -149,22 +134,21 @@ window.onload = function() {
     requestAnimationFrameLoop(function() {
       ctx.fillStyle = "#000";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      stateListener.getData().forEach(function(entity) {
-        entity.draw(ctx);
-      });
+      for (var i in stateListener.data) {
+        stateListener.data[i].draw(ctx);
+      };
     });
 
     var delta = new Date().getTime();
     requestAnimationFrameLoop(function() {
       var now = new Date().getTime();
-      var entities = stateListener.getData();
-      entities.forEach(function(entity) {
-        entity.update(now - delta);
-      });
+      for (var i in stateListener.data) {
+        stateListener.data[i].update(now - delta);
+      };
 
       forEveryCollidingPair(entities, function(a, b) {
-        stateListener.unsetDatum(a.id);
-        stateListener.unsetDatum(b.id);
+        delete stateListener.data[a.id];
+        delete stateListener.data[b.id];
       });
 
       delta = now;

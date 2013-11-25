@@ -14,7 +14,16 @@
     return distance < a.size.x / 2 + b.size.x / 2;
   };
 
-  var forEveryCollidingPair = function(entities, onCollision) {
+  var values = function(o) {
+    var a = [];
+    for (var i in o) {
+      a.push(o[i]);
+    }
+    return a;
+  }
+
+  var forEveryCollidingPair = function(entityObj, onCollision) {
+    var entities = values(entityObj);
     for (var i = 0; i < entities.length; i++) {
       for (var j = i + 1; j < entities.length; j++) {
         var a = entities[i];
