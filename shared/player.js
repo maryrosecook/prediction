@@ -16,12 +16,12 @@
       this.position.y += this.vector.y * delta;
     },
 
-    change: function(keyCode) {
-      if (keyCode === 37) { // left
+    change: function(e) {
+      if (e.keyCode === 37) { // left
         this.angle -= ROTATION_FACTOR;
-      } else if (keyCode === 39) { // right
+      } else if (e.keyCode === 39) { // right
         this.angle += ROTATION_FACTOR;
-      } else if (keyCode === 38) { // up
+      } else if (e.keyCode === 38) { // up
         this.vector.x -= Math.sin(this.angle) * THRUST_FACTOR;
         this.vector.y += Math.cos(this.angle) * THRUST_FACTOR;
       }

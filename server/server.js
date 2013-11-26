@@ -25,10 +25,16 @@ var gameSettings = {
   size: { x:300, y: 300 }
 };
 
+Player.prototype.logSynThenChange = function(e) {
+  this.syn = e.syn; // last sync point
+  this.change(e);
+};
+
 Player.prototype.toData = function() {
   return {
     ctor: 'Player',
     id: this.id,
+    syn: this.syn,
     data: {
       angle: this.angle,
       position: this.position
@@ -68,9 +74,7 @@ io.sockets.on('connection', function (socket) {
 
   io.sockets.emit('update', player.toData());
 
-  socket.on('keyactive', function(data) {
-    player.change(data.key);
-  });
+  socket.on('keyactive', player.logSynThenChange.bind(player));
 
   socket.on('newbullet', function(data) {
     var bullet = new Bullet(data);

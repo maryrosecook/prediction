@@ -4,6 +4,25 @@ var extend = function(sender, recipient) {
   }
 };
 
+var sync = function(entity, update) {
+  if (entity.changes === undefined) {
+    extend(update.data, entity);
+    return;
+  }
+
+  var eventsToReplay = entity.changes.filter(function(x) {
+    return x.syn > update.syn;
+  });
+
+  extend(update.data, entity);
+
+  eventsToReplay.forEach(function(x) {
+    entity.change(x);
+  });
+
+  entity.changes = eventsToReplay;
+};
+
 var drawCircle = function(ctx, radius, position, color) {
   ctx.fillStyle = color;
   ctx.beginPath();
@@ -15,11 +34,12 @@ var drawCircle = function(ctx, radius, position, color) {
 var KeyDispatcher = function() {
   var keyStates = {};
   var fns = { active: [], up: [], down: [] };
+  var syn = 0;
 
   var dispatch = function(dispatchFns, keyCodeStr) {
     var keyCode = parseInt(keyCodeStr, 10);
     dispatchFns.forEach(function(f) {
-      f(keyCode);
+      f({ syn: syn++, keyCode: keyCode });
     });
   };
 
@@ -57,7 +77,8 @@ var StateListener = function(socket) {
 
   socket.on('update', function(message) {
     self.data[message.id] = self.data[message.id] || constructEntity(message);
-    extend(message.data, self.data[message.id]);
+
+    sync(self.data[message.id], message);
   });
 
   socket.on('destroy', function(message) {
@@ -72,6 +93,12 @@ Player.prototype.draw = function(ctx) {
   ctx.rotate(this.angle); // radians
   drawCircle(ctx, 2, { x: 0, y: this.size.y / 3 }, "#f00")
   ctx.restore();
+};
+
+Player.prototype.logAndChange = function(e) {
+  this.changes = this.changes || [];
+  this.changes.push(e);
+  this.change(e);
 };
 
 Bullet.prototype.draw = function(ctx) {
@@ -112,7 +139,7 @@ window.onload = function() {
     var player = new Player(data.player);
     player.color = "yellow";
     stateListener.data[data.player.id] = player;
-    keyDispatcher.register('active', player.change.bind(player));
+    keyDispatcher.register('active', player.logAndChange.bind(player));
     keyDispatcher.register('down', function(keyCode) {
       if (keyCode === 32) {
         var bullet = player.fire();
@@ -123,9 +150,9 @@ window.onload = function() {
       }
     });
 
-    keyDispatcher.register('active', function(key) {
-      latentBy(0, function() {
-        socket.emit('keyactive', { key:key });
+    keyDispatcher.register('active', function(e) {
+      latentBy(500, function() {
+        socket.emit('keyactive', e);
       });
     });
 
